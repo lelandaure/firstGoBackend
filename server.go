@@ -16,8 +16,12 @@ func (s *Server) Listen() error {
 	return nil
 }
 
-func (s *Server) Handle(path string, handler http.HandlerFunc) {
-	s.router.rules[path] = handler
+func (s *Server) Handle(method string, path string, handler http.HandlerFunc) {
+	_, exist := s.router.rules[path]
+	if !exist {
+		s.router.rules[path] = make(map[string]http.HandlerFunc)
+	}
+	s.router.rules[path][method] = handler
 }
 
 func (s *Server) AddMiddleware(handler http.HandlerFunc, middlewares ...Middleware) http.HandlerFunc {
